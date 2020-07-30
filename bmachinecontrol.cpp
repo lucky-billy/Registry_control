@@ -400,6 +400,21 @@ bool BMachineControl::judgeFile()
     }
 }
 
+bool BMachineControl::judgeDate()
+{
+    QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
+
+    QDateTime dt1 = reg->value(kDateTime1).toDateTime();
+
+    QDateTime dtc = QDateTime::currentDateTime();
+
+    if ( dt1.secsTo(dtc) > 0 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 int BMachineControl::judgeKey()
 {
     QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
@@ -431,21 +446,6 @@ int BMachineControl::judgeKey()
         }
     } else {
         return -2;
-    }
-}
-
-bool BMachineControl::judgeDate()
-{
-    QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
-
-    QDateTime dt1 = reg->value(kDateTime1).toDateTime();
-
-    QDateTime dtc = QDateTime::currentDateTime();
-
-    if ( dt1.secsTo(dtc) > 0 ) {
-        return true;
-    } else {
-        return false;
     }
 }
 
