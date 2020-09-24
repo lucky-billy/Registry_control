@@ -1,7 +1,6 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -9,7 +8,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    m_machine = new BMachineControl();
+    setWindowTitle("Registry");
+    setMaximumSize(this->width(), this->height());
+    setMinimumSize(this->width(), this->height());
+
+    m_machine = new BMachineControl_64();
 }
 
 MainWindow::~MainWindow()
@@ -41,7 +44,7 @@ void MainWindow::on_createBtn_clicked()
     }
 
     if ( ui->textEdit->toPlainText() == "" ) {
-        QMessageBox::information(nullptr, "error", "No machine info !", QMessageBox::Ok);
+        QMessageBox::critical(nullptr, "error", "No machine info !", QMessageBox::Ok);
     } else {
         QString key = m_machine->getKey(ui->textEdit->toPlainText(), date, month);
         ui->lineEdit->setText(key);
@@ -54,6 +57,6 @@ void MainWindow::on_activeBtn_clicked()
     if (ret) {
         QMessageBox::information(nullptr, "info", "Registered successfully !", QMessageBox::Ok);
     } else {
-        QMessageBox::information(nullptr, "error", "Registered failed !", QMessageBox::Ok);
+        QMessageBox::critical(nullptr, "error", "Registered failed !", QMessageBox::Ok);
     }
 }

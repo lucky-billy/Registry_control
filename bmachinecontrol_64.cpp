@@ -1,12 +1,12 @@
-﻿#include "bmachinecontrol.h"
+﻿#include "bmachinecontrol_64.h"
 #include <QMessageBox>
 
-BMachineControl::BMachineControl()
+BMachineControl_64::BMachineControl_64()
 {
 
 }
 
-QString BMachineControl::getWMIHWInfo(int type)
+QString BMachineControl_64::getWMIHWInfo(int type)
 {
     /*
      * 注意：qt调用wmi时，对查询语句要求很严格，所以like之类的句子务必精确才能有结果出来
@@ -82,203 +82,91 @@ QString BMachineControl::getWMIHWInfo(int type)
     return hwInfo;
 }
 
-QString BMachineControl::getCPUID1()
+QString BMachineControl_64::getMachineName()
 {
-#if defined(_AMD64_)
-    return "";
-#else
-    char    OEMString[13];
-    QString result;
-    int     iEAXValue, iEBXValue, iECXValue, iEDXValue;
-
-    _asm
-    {
-        mov     eax,0
-        cpuid
-        mov     DWORD     PTR     OEMString,ebx
-        mov     DWORD     PTR     OEMString+4,edx
-        mov     DWORD     PTR     OEMString+8,ecx
-        mov     BYTE      PTR     OEMString+12,0
-    }
-
-    _asm
-    {
-        mov     eax,1
-        cpuid
-        mov     iEAXValue,eax
-        mov     iEBXValue,ebx
-        mov     iECXValue,ecx
-        mov     iEDXValue,edx
-    }
-
-    int iCPUFamily = (0xf00 & iEAXValue) >> 8;
-    char Family[10] = {0};
-    _itoa_s(iCPUFamily, Family, 10);
-
-    _asm
-    {
-        mov     eax,2
-        CPUID
-    }
-
-    char szCPUID[129] = {NULL};
-    char szTmp[33] = {NULL};
-    unsigned long s1 = 0, s2 = 0;
-
-    _asm
-    {
-        mov     eax,01h
-        xor     edx,edx
-        cpuid
-        mov     s1,edx
-        mov     s2,eax
-    }
-    sprintf_s(szTmp, "%08X%08X", s1, s2);
-    strcpy_s(szCPUID, szTmp);
-
-    _asm
-    {
-        mov     eax,03h
-        xor     ecx,ecx
-        xor     edx,edx
-        cpuid
-        mov     s1,edx
-        mov     s2,ecx
-    }
-
-    sprintf_s(szTmp, "%08X%08X", s1, s2);
-    strcat_s(szCPUID, szTmp);
-
-    result = QString(szCPUID).toUpper();
-    return result;
-#endif
+    QString machineName = QHostInfo::localHostName();
+    return machineName;
 }
 
-QString BMachineControl::getCPUID2()
+QString BMachineControl_64::getIP()
 {
-#if defined(_AMD64_)
-    return "";
-#else
-    DWORD   dwId1, dwId2, dwId3, dwId4;
-    char    szCompany[13];
-    PCHAR   pCompany = szCompany;
-    szCompany[12] = 0;
+    QString ip = "";
 
-    _asm
+    QList<QNetworkInterface> interFaceList = QNetworkInterface::allInterfaces();
+
+    for( int i = 0; i < interFaceList.size(); ++i )
     {
-        pushfd
-        pushad
-        mov   eax,1
-        _emit   0x0f
-        _emit   0xa2
-        mov   dwId1,eax
-        mov   dwId2,ebx
-        mov   dwId3,ecx
-        mov   dwId4,edx
-        mov   edi,pCompany
-        mov   eax,0
-        _emit   0x0f
-        _emit   0xa2
-        mov   eax,ebx
-        stosd
-        mov   eax,edx
-        stosd
-        mov   eax,ecx
-        stosd
-        popad
-        popfd
-    }
+        QNetworkInterface m_interface = interFaceList.at(i);
 
-    DWORD dwResult = 0;
-    DWORD dwTemp1 = dwId1 << 12;
-    DWORD dwTemp2 = dwId2 << 8 ;
-    DWORD dwTemp3 = dwId3 << 4;
-
-    QString res = QString("splitted string is %1_%2_%3_%4").arg(QString::number(dwTemp1,16)).
-            arg(QString::number(dwTemp2,16)).arg(QString::number(dwTemp3,16)).arg(QString::number(dwId4,16));
-    dwResult = dwTemp1 + dwTemp2 + dwTemp3 + dwId4;
-    QString result = QString::number(dwResult,16).toUpper();
-    QString cpy = QString::fromLocal8Bit(szCompany);
-    return result;
-#endif
-}
-
-QString BMachineControl::getHDLogicalID()
-{
-    DWORD VolumeSerialNumber;
-    GetVolumeInformation(L"C:\\", NULL, 0, &VolumeSerialNumber, NULL, NULL, NULL, 0);
-    return QString::number(VolumeSerialNumber, 16).toUpper();
-}
-
-QString BMachineControl::getMac()
-{
-    QString macAddress;
-    QList<QNetworkAddressEntry> lclInfAE;
-    QList<QNetworkInterface> list = QNetworkInterface::allInterfaces();
-    foreach (QNetworkInterface iface, list)
-    {
-        if ( !(iface.humanReadableName().contains("VMware",Qt::CaseInsensitive)) &&
-             !(iface.humanReadableName().contains("Tunnel",Qt::CaseInsensitive)) &&
-             !(iface.humanReadableName().contains("Tunneling",Qt::CaseInsensitive)) &&
-             !(iface.humanReadableName().contains("Loopback",Qt::CaseInsensitive)) &&
-             !(iface.humanReadableName().contains("Pseudo",Qt::CaseInsensitive)) )
+        if ( m_interface.flags().testFlag(QNetworkInterface::IsRunning) )
         {
-            if ( iface.hardwareAddress() != "" ) {
-                macAddress = iface.hardwareAddress().toUpper();
-            }
+            QList<QNetworkAddressEntry> entryList = m_interface.addressEntries();
 
+            foreach( QNetworkAddressEntry entry, entryList )
+            {
+                if( QAbstractSocket::IPv4Protocol == entry.ip().protocol() &&
+                        entry.ip() != QHostAddress::LocalHost &&
+                        entry.ip().toString().startsWith("192.168.") )
+                {
+                    ip = entry.ip().toString();
+                    break;
+                }
+            }
         }
     }
-    return macAddress;
+
+    return ip;
 }
 
-QString BMachineControl::getCPUManID()
+QString BMachineControl_64::getMac()
 {
-#if defined(_AMD64_)
-    return "";
-#else
-    DWORD deax;
-    DWORD debx;
-    DWORD decx;
-    DWORD dedx;
+    QString strMac;
 
-    char ID[25];
-    memset(ID, 0, sizeof(ID));
-    __asm
+    QList<QNetworkInterface> netList = QNetworkInterface::allInterfaces();
+
+    foreach( QNetworkInterface item, netList )
     {
-        mov eax,0
-        cpuid
-        mov deax,eax
-        mov debx,ebx
-        mov decx,ecx
-        mov dedx,edx
+        if( (QNetworkInterface::IsUp & item.flags()) && (QNetworkInterface::IsRunning & item.flags()) )
+        {
+            if( strMac.isEmpty() || strMac < item.hardwareAddress() )
+            {
+                strMac = item.hardwareAddress();
+            }
+        }
     }
 
-    memcpy(ID+0, &debx, 4);
-    memcpy(ID+4, &dedx, 4);
-    memcpy(ID+8, &decx, 4);
-
-    return QString::fromLocal8Bit(ID);
-#endif
+    return strMac;
 }
 
-QString BMachineControl::getInfo()
+QString BMachineControl_64::getCPU()
+{
+    QSettings *CPU = new QSettings("HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+                                   QSettings::NativeFormat);
+
+    QString m_cpuDescribe = CPU->value("ProcessorNameString").toString();
+
+    delete CPU;
+    return m_cpuDescribe;
+}
+
+QString BMachineControl_64::getInfo()
 {
     QString info;
     for ( int i = 1; i != 6; ++i )
     {
         info.append(getWMIHWInfo(i));
     }
-    info.append(getCPUID1());
-    info.append(getCPUID2());
-    info.append(getHDLogicalID());
-//    info.append(getMac());
-    info.append(getCPUManID());
+    info.append(getMachineName());
+//    info.append(getIP());
+    info.append(getMac());
+    info.append(getCPU());
 
     return info;
 }
 
-QString BMachineControl::getKey(QString machineinfo, QString ddMMyyyy, int months)
+//******************************************************************************************************************
+
+QString BMachineControl_64::getKey(QString machineinfo, QString ddMMyyyy, int months)
 {
     QString originalStr120;
     if ( machineinfo.isEmpty() ) {
@@ -303,7 +191,7 @@ QString BMachineControl::getKey(QString machineinfo, QString ddMMyyyy, int month
     return activeCode;
 }
 
-bool BMachineControl::activeKey(QString key)
+bool BMachineControl_64::activeKey(QString key)
 {
     QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
 
@@ -324,7 +212,6 @@ bool BMachineControl::activeKey(QString key)
                 reg->setValue(kDateTime2, dtc.addMonths(validity));
                 reg->setValue(kMonths, validity);
 
-                copyToFile(reg, true);
                 return true;
             }
         }
@@ -333,41 +220,11 @@ bool BMachineControl::activeKey(QString key)
     return false;
 }
 
-void BMachineControl::copyToFile(QSettings* reg, bool magic)
-{
-    QFileInfo info(kFile);
-    QString path = info.path();
-
-    QDir dir(path);
-    if ( !dir.exists() ) {
-        dir.mkpath(path);
-    }
-
-    QFile f(kFile);
-    f.open(QIODevice::ReadWrite);
-    QDataStream out(&f);
-    out << reg->value(kKey).toString();
-    out << reg->value(kDateTime0).toDateTime();
-    out << reg->value(kDateTime1).toDateTime();
-    out << reg->value(kDateTime2).toDateTime();
-    out << reg->value(kMonths).toInt();
-
-    if ( magic ) {
-        out << "Stray birds of summer come to my window to sing and fly away. "
-               "And yellow leaves of autumn, which have no songs, "
-               "flutter and fall there with a sign.";
-    }
-
-    f.close();
-}
-
-bool BMachineControl::initializeReg()
+bool BMachineControl_64::initializeReg()
 {
     QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
 
     QDateTime dtc = QDateTime::currentDateTime();
-
-    QFileInfo info(kFile);
 
     if ( !reg->allKeys().contains(kDateTime0) ) {
         reg->setValue(kKey, "");
@@ -376,43 +233,13 @@ bool BMachineControl::initializeReg()
         reg->setValue(kDateTime2, dtc);
         reg->setValue(kMonths, 0);
 
-        copyToFile(reg, true);
         return true;
     } else {
         return false;
     }
 }
 
-bool BMachineControl::judgeFile()
-{
-    QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
-
-    QFile f(kFile);
-    f.open(QIODevice::ReadOnly);
-
-    QString k;
-    QDateTime dt0;
-    QDateTime dt1;
-    QDateTime dt2;
-    int m;
-
-    QDataStream in(&f);
-    in >> k >> dt0 >> dt1 >> dt2 >> m;
-
-    f.close();
-
-    if (k != reg->value(kKey).toString() ||
-            dt0 != reg->value(kDateTime0).toDateTime() ||
-            dt1 != reg->value(kDateTime1).toDateTime() ||
-            dt2 != reg->value(kDateTime2).toDateTime() ||
-            m != reg->value(kMonths).toInt()) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-bool BMachineControl::judgeDate()
+bool BMachineControl_64::judgeDate()
 {
     QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
 
@@ -427,7 +254,7 @@ bool BMachineControl::judgeDate()
     }
 }
 
-int BMachineControl::judgeKey()
+int BMachineControl_64::judgeKey()
 {
     QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
 
@@ -461,13 +288,11 @@ int BMachineControl::judgeKey()
     }
 }
 
-void BMachineControl::refreshDT1()
+void BMachineControl_64::refreshDT1()
 {
     QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
 
     QDateTime dtc = QDateTime::currentDateTime();
 
     reg->setValue(kDateTime1, dtc);
-
-    copyToFile(reg);
 }

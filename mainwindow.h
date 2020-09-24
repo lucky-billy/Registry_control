@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <bmachinecontrol.h>
+#include <bmachinecontrol_64.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,6 +25,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    BMachineControl *m_machine;
+    BMachineControl_64 *m_machine;
 };
 #endif // MAINWINDOW_H

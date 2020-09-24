@@ -18,14 +18,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     bmachinecontrol.cpp \
+    bmachinecontrol_64.cpp \
+    machineinformation.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     bmachinecontrol.h \
+    bmachinecontrol_64.h \
+    machineinformation.h \
     mainwindow.h
 
 FORMS += \
+    machineinformation.ui \
     mainwindow.ui
 
 # Default rules for deployment.
