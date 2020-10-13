@@ -158,7 +158,7 @@ QString BMachineControl_64::getInfo()
     }
     info.append(getMachineName());
 //    info.append(getIP());
-    info.append(getMac());
+//    info.append(getMac());
     info.append(getCPU());
 
     return info;
