@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     bmachinecontrol.cpp \
+    bmachinecontrol_32.cpp \
     bmachinecontrol_64.cpp \
     machineinformation.cpp \
     main.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
 
 HEADERS += \
     bmachinecontrol.h \
+    bmachinecontrol_32.h \
     bmachinecontrol_64.h \
     machineinformation.h \
     mainwindow.h

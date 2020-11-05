@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     setMaximumSize(this->width(), this->height());
     setMinimumSize(this->width(), this->height());
 
-    m_machine = new BMachineControl_64();
+    m_machine = new BMachineControl_32();
+//    m_machine = new BMachineControl_64();
 }
 
 MainWindow::~MainWindow()
