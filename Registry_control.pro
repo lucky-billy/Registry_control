@@ -22,14 +22,16 @@ SOURCES += \
     bmachinecontrol_64.cpp \
     machineinformation.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    samsungmachinecontrol.cpp
 
 HEADERS += \
     bmachinecontrol.h \
     bmachinecontrol_32.h \
     bmachinecontrol_64.h \
     machineinformation.h \
-    mainwindow.h
+    mainwindow.h \
+    samsungmachinecontrol.h
 
 FORMS += \
     machineinformation.ui \

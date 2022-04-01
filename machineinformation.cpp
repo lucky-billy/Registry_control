@@ -12,8 +12,7 @@ MachineInformation::MachineInformation(QWidget *parent) :
     setMaximumSize(this->width(), this->height());
     setMinimumSize(this->width(), this->height());
 
-    m_machine = new BMachineControl_32();
-//    m_machine = new BMachineControl_64();
+    m_machine = new SamsungMachineControl();
 
     QString info = m_machine->getInfo();
     ui->textEdit->setText(info);
@@ -27,7 +26,7 @@ MachineInformation::~MachineInformation()
 
 void MachineInformation::on_activeBtn_clicked()
 {
-    bool ret = m_machine->activeKey( ui->lineEdit->text() );
+    bool ret = m_machine->activeKey( ui->lineEdit->text(), ui->radioButton->isChecked());
     if (ret) {
         QMessageBox::information(nullptr, "info", "Registered successfully !", QMessageBox::Ok);
     } else {

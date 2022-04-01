@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>250</height>
+    <width>401</width>
+    <height>275</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -92,7 +92,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>210</y>
+      <y>240</y>
       <width>290</width>
       <height>20</height>
      </rect>
@@ -105,7 +105,7 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>210</y>
+      <y>240</y>
       <width>80</width>
       <height>20</height>
      </rect>
@@ -125,6 +125,19 @@
     </property>
     <property name="text">
      <string>获取设备信息</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>210</y>
+      <width>115</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>绑定硬件ID</string>
     </property>
    </widget>
   </widget>

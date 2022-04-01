@@ -2,7 +2,8 @@
 #define MACHINEINFORMATION_H
 
 #include <QMainWindow>
-#include "bmachinecontrol_32.h"
+#include "samsungmachinecontrol.h"
+//#include "bmachinecontrol_32.h"
 //#include "bmachinecontrol_64.h"
 
 namespace Ui {
@@ -22,7 +23,8 @@ private slots:
 
 private:
     Ui::MachineInformation *ui;
-    BMachineControl_32 *m_machine;
+    SamsungMachineControl *m_machine;
+//    BMachineControl_32 *m_machine;
 //    BMachineControl_64 *m_machine;
 };
 
