@@ -166,13 +166,13 @@ QString BMachineControl_64::getInfo()
 
 //******************************************************************************************************************
 
-QString BMachineControl_64::getKey(QString machineinfo, QString ddMMyyyy, int months)
+QString BMachineControl_64::getKey(QString machineInfo, QString ddMMyyyy, int months)
 {
     QString originalStr120;
-    if ( machineinfo.isEmpty() ) {
-        originalStr120 = QString("machineinfo") + ddMMyyyy + QString::number(months);
+    if ( machineInfo.isEmpty() ) {
+        originalStr120 = QString("machineInfo") + ddMMyyyy + QString::number(months);
     } else {
-        originalStr120 = machineinfo + ddMMyyyy + QString::number(months);
+        originalStr120 = machineInfo + ddMMyyyy + QString::number(months);
     }
     QCryptographicHash sha1(QCryptographicHash::Sha1);
 
@@ -193,46 +193,41 @@ QString BMachineControl_64::getKey(QString machineinfo, QString ddMMyyyy, int mo
 
 bool BMachineControl_64::activeKey(QString key)
 {
-    QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
+    QSettings reg(kReg, QSettings::NativeFormat);
 
     QDateTime dtc = QDateTime::currentDateTime();
     QDateTime dtct = dtc;
 
-    int daydelay = 2;
-    for ( int d = 0; d != daydelay; ++d )
+    // 注册码最多延迟2天激活
+    int daydelay = 3;
+    for ( int d = 0; d < daydelay; ++d )
     {
         for ( int i = 0; i <= kValidity.size(); ++i )
         {
             int validity = kValidity.at(i);
             QString k0 = getKey(getInfo(), dtct.date().toString("ddMMyyyy"), validity);
-            if (k0 == key) {
-                reg->setValue(kKey, key);
-                reg->setValue(kDateTime0, dtct);
-                reg->setValue(kDateTime1, dtc);
-                reg->setValue(kDateTime2, dtc.addMonths(validity));
-                reg->setValue(kMonths, validity);
 
+            if ( k0 == key ) {
+                reg.setValue(kKey, key);
+                reg.setValue(kDateTime0, dtct);
+                reg.setValue(kDateTime1, dtct);
+                reg.setValue(kDateTime2, dtct.addMonths(validity));
+                reg.setValue(kMonths, validity);
                 return true;
             }
         }
-        dtct.addDays(-1);
+
+        dtct = dtct.addDays(-1);
     }
+
     return false;
 }
 
-bool BMachineControl_64::initializeReg()
+bool BMachineControl_64::judgeRegistry()
 {
-    QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
+    QSettings reg(kReg, QSettings::NativeFormat);
 
-    QDateTime dtc = QDateTime::currentDateTime();
-
-    if ( !reg->allKeys().contains(kDateTime0) ) {
-        reg->setValue(kKey, "");
-        reg->setValue(kDateTime0, dtc);
-        reg->setValue(kDateTime1, dtc);
-        reg->setValue(kDateTime2, dtc);
-        reg->setValue(kMonths, 0);
-
+    if ( reg.allKeys().contains(kKey) ) {
         return true;
     } else {
         return false;
@@ -241,13 +236,13 @@ bool BMachineControl_64::initializeReg()
 
 bool BMachineControl_64::judgeDate()
 {
-    QSettings *reg = new QSettings(kReg, QSettings::NativeFormat);
+    QSettings reg(kReg, QSettings::NativeFormat);
 
-    QDateTime dt1 = reg->value(kDateTime1).toDateTime();
-
+    QDateTime dt1 = reg.value(kDateTime1).toDateTime();
     QDateTime dtc = QDateTime::currentDateTime();
 
-    if ( dt1.secsTo(dtc) > 0 ) {
+    // 返回从 dt1 到 dtc 的秒数，如果 dtc 早于 dt1，则返回的值为负值
+    if ( dt1.secsTo(dtc) >= 0 ) {
         return true;
     } else {
         return false;

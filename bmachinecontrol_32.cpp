@@ -30,6 +30,7 @@ QString BMachineControl_32::getWMIHWInfo(int type)
      *    SELECT Product ...
      */
 
+    /*
     QString hwInfo;
     QStringList sqlCmd;
     sqlCmd.clear();
@@ -80,6 +81,9 @@ QString BMachineControl_32::getWMIHWInfo(int type)
     }
 
     return hwInfo;
+    */
+
+    return "";
 }
 
 QString BMachineControl_32::getMachineName()

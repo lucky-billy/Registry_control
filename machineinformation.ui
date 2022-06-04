@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>403</width>
-    <height>245</height>
+    <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>210</y>
+      <y>180</y>
       <width>290</width>
       <height>20</height>
      </rect>
@@ -50,26 +50,13 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>210</y>
+      <y>180</y>
       <width>80</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>激活</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="radioButton">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>180</y>
-      <width>115</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>绑定电脑ID</string>
     </property>
    </widget>
   </widget>

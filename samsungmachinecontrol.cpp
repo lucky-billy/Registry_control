@@ -1,4 +1,4 @@
-#include "samsungmachinecontrol.h"
+﻿#include "samsungmachinecontrol.h"
 #include <QMessageBox>
 
 SamsungMachineControl::SamsungMachineControl()
@@ -84,6 +84,7 @@ QString SamsungMachineControl::getWMIHWInfo(int type)
 
 QString SamsungMachineControl::getCPUID1()
 {
+    /*
     char    OEMString[13];
     QString result;
     int     iEAXValue, iEBXValue, iECXValue, iEDXValue;
@@ -148,10 +149,14 @@ QString SamsungMachineControl::getCPUID1()
 
     result = QString(szCPUID).toUpper();
     return result;
+    */
+
+    return "";
 }
 
 QString SamsungMachineControl::getCPUID2()
 {
+    /*
     DWORD   dwId1, dwId2, dwId3, dwId4;
     char    szCompany[13];
     PCHAR   pCompany = szCompany;
@@ -193,6 +198,9 @@ QString SamsungMachineControl::getCPUID2()
     QString result = QString::number(dwResult,16).toUpper();
     QString cpy = QString::fromLocal8Bit(szCompany);
     return result;
+    */
+
+    return "";
 }
 
 QString SamsungMachineControl::getHDLogicalID()
@@ -226,6 +234,7 @@ QString SamsungMachineControl::getMac()
 
 QString SamsungMachineControl::getCPUManID()
 {
+    /*
     DWORD deax;
     DWORD debx;
     DWORD decx;
@@ -248,6 +257,9 @@ QString SamsungMachineControl::getCPUManID()
     memcpy(ID+8, &decx, 4);
 
     return QString::fromLocal8Bit(ID);
+    */
+
+    return "";
 }
 
 QString SamsungMachineControl::getInfo()

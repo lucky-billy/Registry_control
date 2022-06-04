@@ -12,9 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
     setMaximumSize(this->width(), this->height());
     setMinimumSize(this->width(), this->height());
 
-    m_machine = new SamsungMachineControl();
+//    m_machine = new SamsungMachineControl();
 //    m_machine = new BMachineControl_32();
-//    m_machine = new BMachineControl_64();
+    m_machine = new BMachineControl_64();
 }
 
 MainWindow::~MainWindow()
@@ -48,14 +48,14 @@ void MainWindow::on_createBtn_clicked()
     if ( ui->textEdit->toPlainText() == "" ) {
         QMessageBox::critical(nullptr, "error", "No machine info !", QMessageBox::Ok);
     } else {
-        QString key = m_machine->getKey(ui->textEdit->toPlainText(), date, month, ui->radioButton->isChecked());
+        QString key = m_machine->getKey(ui->textEdit->toPlainText(), date, month);
         ui->lineEdit->setText(key);
     }
 }
 
 void MainWindow::on_activeBtn_clicked()
 {
-    bool ret = m_machine->activeKey( ui->lineEdit->text(), ui->radioButton->isChecked());
+    bool ret = m_machine->activeKey( ui->lineEdit->text());
     if (ret) {
         QMessageBox::information(nullptr, "info", "Registered successfully !", QMessageBox::Ok);
     } else {
